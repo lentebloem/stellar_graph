@@ -1,41 +1,5 @@
-<!DOCTYPE html>
-<meta charset="utf-8">
-<style>
-
-body {
-  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  margin: auto;
-  position: relative;
-  width: 960px;
-}
-
-form {
-  position: absolute;
-  right: 10px;
-  top: 10px;
-}
-
-#tooltip { background-color: white;
-        padding: 3px 5px;
-        border: 1px solid black;
-        text-align: center;}
-
-path {
-  stroke: #fff;
-  fill-rule: evenodd;
-}
-
-</style>
-<body>
-<form>
-  <label><input type="radio" name="mode" value="size"> Size</label>
-  <label><input type="radio" name="mode" value="count" checked> Count</label>
-</form>
-<script src="http://d3js.org/d3.v3.min.js"></script>
-<script>
-
-var width = 960,
-    height = 700,
+var width = 200,
+    height = 250,
     radius = Math.min(width, height) / 2;
 
 var x = d3.scale.linear()
@@ -46,7 +10,7 @@ var y = d3.scale.sqrt()
 
 var color = d3.scale.category20c();
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select("#transactions").append("svg")
     .attr("width", width)
     .attr("height", height)
   .append("g")
@@ -65,7 +29,7 @@ var partition = d3.layout.partition()
 
 function mouseOverArc(d) {
        d3.select(this).attr("stroke","black")
-       
+
           tooltip.html(format_description(d));
           return tooltip.transition()
             .duration(50)
@@ -99,7 +63,7 @@ var arc = d3.svg.arc()
 // Keep track of the node that is currently being displayed as the root.
 var node;
 
-d3.json("2.json", function(error, root) {
+d3.json("transactions.json", function(error, root) {
   node = root;
   var path = svg.datum(root).selectAll("path")
       .data(partition.nodes)
@@ -173,5 +137,3 @@ function arcTweenZoom(d) {
         : function(t) { x.domain(xd(t)); y.domain(yd(t)).range(yr(t)); return arc(d); };
   };
 }
-
-</script>
