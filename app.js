@@ -7,252 +7,176 @@ d3DemoApp.controller('AppCtrl', function AppCtrl ($scope, $http) {
   // initialize the model
   $scope.user = 'GDPKYPW5A2PYCC2FPBCO7R2G5FHXMQBG6TX6IQYYYMXKCHXF2YNM3BOX';
 
-
-  // helper for formatting date
-  var humanReadableDate = function (d) {
-    return d.getUTCMonth()+1 + '/' + d.getUTCDate();
-  };
-
-  // helper for reformatting the Github API response into a form we can pass to D3
-  var reformatAccountData = function (data) {
-    // build up the data to be passed to our d3 visualization
-    var formattedData = [];
-    var formattedToken = [];
-    var records = data._embedded.records;
-    var i;
-    for (i = 0; i < records.length; i++) {
-      formattedData.push(records[i].id);
-      formattedToken.push(records[i].paging_token);
-    }
-    // console.log(formattedToken);
-    // console.log(formattedData);
-    return [formattedData, formattedToken];
-  };
-
-  $scope.getCommitData = function () {
-    $http({
-      method: 'GET',
-      url:'https://horizon-testnet.stellar.org/accounts?limit=200&order=desc'
-    }).
-    success(function (data) {
-      // attach this data to the scope
-      $scope.data = reformatAccountData(data)[0];
-      $scope.users = reformatAccountData(data)[1];
-      // clear the error messages
-      // console.log(data);
-      $scope.error = '';
-    }).
-    error(function (data, status) {
-      if (status === 404) {
-        $scope.error = 'That repository does not exist';
-      } else {
-        $scope.error = 'Error: ' + status;
+  // $scope.udpateJson = function () {
+    // helper for reformatting the Github API response into a form we can pass to D3
+    var reformatAccountData = function (data) {
+      // build up the data to be passed to our d3 visualization
+      var formattedData = [];
+      var formattedToken = [];
+      var records = data._embedded.records;
+      var i;
+      for (i = 0; i < records.length; i++) {
+        formattedData.push(records[i].id);
+        formattedToken.push(records[i].paging_token);
       }
-    });
-  };
+      return [formattedData, formattedToken];
+    };
+
+    var setGraphData = function(data) {
+      $scope.graphJson = data;
+    }
+
+    $scope.getCommitData = function () {
+      $http({
+        method: 'GET',
+        url:'https://horizon-testnet.stellar.org/accounts?limit=200&order=desc'
+      }).
+      success(function (data) {
+        // attach this data to the scope
+        $scope.data = reformatAccountData(data)[0];
+        $scope.accounts = reformatAccountData(data)[1];
+        var dataMatching = $scope.dataMatching = [];
+        var appendAccountEntry = function(key, entry){
+          dataMatching.push({
+              "name": key,
+              "size": 1,
+              "inputs": [entry]
+          });
+        }
+        var m;
+        for (m=1; m<$scope.accounts.length; m+=1) {
+          $http({
+              method: 'GET',
+              url:'https://horizon-testnet.stellar.org/accounts/' + $scope.data[m] + '/operations'
+            }).
+            success(function (data) {
+              // attach this data to the scope
+              var funder = data._embedded.records[0].funder;
+              var key =  data._embedded.records[0].account;
+              appendAccountEntry(key, funder);
+              // console.log(dataMatching);
+            }).
+            error(function (data, status) {
+              if (status === 404) {
+                $scope.error = 'That account does not exist';
+              } else {
+                $scope.error = 'Error: ' + status;
+              }
+            });
+          }
+          console.log(dataMatching);
+          // clear the error messages
+          $scope.error = '';
+      }).
+      error(function (data, status) {
+        if (status === 404) {
+          $scope.error = 'The account does not exist.';
+        } else {
+          $scope.error = 'Error: ' + status;
+        }
+      });
+    };
+  // }();
 
   // get the commit data immediately
   $scope.getCommitData();
-});
 
 
-d3DemoApp.directive('ghVisualization', function () {
+// ===========================
+// var renderD3  = function () {
+    var diameter = 960,
+        radius = diameter / 2,
+        innerRadius = radius - 120;
 
-  // constants
-  var margin = 20,
-    width = 960,
-    height = 500 - .5 - margin,
-    color = d3.interpolateRgb("#f77", "#77f");
+    var cluster = d3.layout.cluster()
+        .size([360, innerRadius])
+        .sort(null)
+        .value(function(d) { return d.size; });
 
-  return {
-    restrict: 'E',
-    scope: {
-      val: '=',
-      grouped: '='
-    },
-    link: function (scope, element, attrs) {
+    var bundle = d3.layout.bundle();
 
-      // set up initial svg object
-      var vis = d3.select(element[0])
-        .append("svg")
-          .attr("width", width)
-          .attr("height", height + margin + 100);
+    var line = d3.svg.line.radial()
+        .interpolate("bundle")
+        .tension(.85)
+        .radius(function(d) { return d.y; })
+        .angle(function(d) { return d.x / 180 * Math.PI; });
 
-      scope.$watch('val', function (newVal, oldVal) {
+    var svg = d3.select("body").append("svg")
+        .attr("width", diameter)
+        .attr("height", diameter)
+      .append("g")
+        .attr("transform", "translate(" + radius + "," + radius + ")");
 
-        // clear the elements inside of the directive
-        vis.selectAll('*').remove();
+    // $scope.$digest();
+    // $scope.$watch('', function (newVal) {
+      // ignore first call which happens before we even have data from the Github API
+      d3.json($scope.dataMatching, function(error, classes) {
+        if (error) throw error;
 
-        // if 'val' is undefined, exit
-        if (!newVal) {
-          return;
-        }
+        console.log(classes);
+        var nodes = cluster.nodes(packageHierarchy(classes)),
+            links = packageImports(nodes);
 
-        // Based on: http://mbostock.github.com/d3/ex/stack.html
-        var n = newVal.length, // number of layers
-            m = newVal[0].length, // number of samples per layer
-            data = d3.layout.stack()(newVal);
+        svg.selectAll(".link")
+            .data(bundle(links))
+          .enter().append("path")
+            .attr("class", "link")
+            .attr("d", line);
 
-        var mx = m,
-            my = d3.max(data, function(d) {
-              return d3.max(d, function(d) {
-                return d.y0 + d.y;
-              });
-            }),
-            mz = d3.max(data, function(d) {
-              return d3.max(d, function(d) {
-                return d.y;
-              });
-            }),
-            x = function(d) { return d.x * width / mx; },
-            y0 = function(d) { return height - d.y0 * height / my; },
-            y1 = function(d) { return height - (d.y + d.y0) * height / my; },
-            y2 = function(d) { return d.y * height / mz; }; // or `my` not rescale
-
-        // Layers for each color
-        // =====================
-
-        var layers = vis.selectAll("g.layer")
-            .data(data)
+        svg.selectAll(".node")
+            .data(nodes.filter(function(n) { return !n.children; }))
           .enter().append("g")
-            .style("fill", function(d, i) {
-              return color(i / (n - 1));
-            })
-            .attr("class", "layer");
-
-        // Bars
-        // ====
-
-        var bars = layers.selectAll("g.bar")
-            .data(function(d) { return d; })
-          .enter().append("g")
-            .attr("class", "bar")
-            .attr("transform", function(d) {
-              return "translate(" + x(d) + ",0)";
-            });
-
-        bars.append("rect")
-            .attr("width", x({x: .9}))
-            .attr("x", 0)
-            .attr("y", height)
-            .attr("height", 0)
-          .transition()
-            .delay(function(d, i) { return i * 10; })
-            .attr("y", y1)
-            .attr("height", function(d) {
-              return y0(d) - y1(d);
-            });
-
-        // X-axis labels
-        // =============
-
-        var labels = vis.selectAll("text.label")
-            .data(data[0])
-          .enter().append("text")
-            .attr("class", "label")
-            .attr("x", x)
-            .attr("y", height + 6)
-            .attr("dx", x({x: .45}))
-            .attr("dy", ".71em")
-            .attr("text-anchor", "middle")
-            .text(function(d, i) {
-              return d.date;
-            });
-
-        // Chart Key
-        // =========
-
-        var keyText = vis.selectAll("text.key")
-            .data(data)
-          .enter().append("text")
-            .attr("class", "key")
-            .attr("y", function (d, i) {
-              return height + 42 + 30*(i%3);
-            })
-            .attr("x", function (d, i) {
-              return 155 * Math.floor(i/3) + 15;
-            })
-            .attr("dx", x({x: .45}))
-            .attr("dy", ".71em")
-            .attr("text-anchor", "left")
-            .text(function(d, i) {
-              return d[0].user;
-            });
-
-        var keySwatches = vis.selectAll("rect.swatch")
-            .data(data)
-          .enter().append("rect")
-            .attr("class", "swatch")
-            .attr("width", 20)
-            .attr("height", 20)
-            .style("fill", function(d, i) {
-              return color(i / (n - 1));
-            })
-            .attr("y", function (d, i) {
-              return height + 36 + 30*(i%3);
-            })
-            .attr("x", function (d, i) {
-              return 155 * Math.floor(i/3);
-            });
-
-
-        // Animate between grouped and stacked
-        // ===================================
-
-        function transitionGroup() {
-          vis.selectAll("g.layer rect")
-            .transition()
-              .duration(500)
-              .delay(function(d, i) { return (i % m) * 10; })
-              .attr("x", function(d, i) { return x({x: .9 * ~~(i / m) / n}); })
-              .attr("width", x({x: .9 / n}))
-              .each("end", transitionEnd);
-
-          function transitionEnd() {
-            d3.select(this)
-              .transition()
-                .duration(500)
-                .attr("y", function(d) { return height - y2(d); })
-                .attr("height", y2);
-          }
-        }
-
-        function transitionStack() {
-          vis.selectAll("g.layer rect")
-            .transition()
-              .duration(500)
-              .delay(function(d, i) { return (i % m) * 10; })
-              .attr("y", y1)
-              .attr("height", function(d) {
-                return y0(d) - y1(d);
-              })
-              .each("end", transitionEnd);
-
-          function transitionEnd() {
-            d3.select(this)
-              .transition()
-                .duration(500)
-                .attr("x", 0)
-                .attr("width", x({x: .9}));
-          }
-        }
-
-        // reset grouped state to false
-        scope.grouped = false;
-
-        // setup a watch on 'grouped' to switch between views
-        scope.$watch('grouped', function (newVal, oldVal) {
-          // ignore first call which happens before we even have data from the Github API
-          if (newVal === oldVal) {
-            return;
-          }
-          if (newVal) {
-            transitionGroup();
-          } else {
-            transitionStack();
-          }
-        });
+            .attr("class", "node")
+            .attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; })
+          .append("text")
+            .attr("dx", function(d) { return d.x < 180 ? 8 : -8; })
+            .attr("dy", ".31em")
+            .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+            .attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; })
+            .text(function(d) { return d.key; });
       });
-    }
-  }
+
+      d3.select(self.frameElement).style("height", diameter + "px");
+
+      // Lazily construct the package hierarchy from class names.
+      function packageHierarchy() {
+        var map = {};
+        function find(name, data) {
+          var node = map[name], i;
+          if (!node) {
+            node = map[name] = data || {name: name, children: []};
+            if (name.length) {
+              node.parent = find(name.substring(0, i = name.lastIndexOf(".")));
+              node.parent.children.push(node);
+              node.key = name.substring(i + 1);
+            }
+          }
+          return node;
+        }
+        angular.forEach(function(d) {
+          find(d.name, d);
+        });
+        return map[""];
+      }
+
+      // Return a list of imports for the given array of nodes.
+      function packageImports(nodes) {
+        var map = {},
+            imports = [];
+        // Compute a map from name to node.
+        nodes.forEach(function(d) {
+          map[d.name] = d;
+        });
+        // For each import, construct a link from the source to target node.
+        nodes.forEach(function(d) {
+          if (d.imports) d.imports.forEach(function(i) {
+            imports.push({source: map[d.name], target: map[i]});
+          });
+        });
+        return imports;
+      }
+    //
+    // });
+// =========================
+
 });
