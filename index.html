@@ -28,6 +28,16 @@
     .error {
       color: red;
     }
+
+    .node {
+      font: 11px "Helvetica Neue", Helvetica, Arial, sans-serif;
+    }
+
+    .link {
+      stroke: steelblue;
+      stroke-opacity: .4;
+      fill: none;
+    }
     </style>
   </head>
   <body ng-app="d3DemoApp" ng-controller="AppCtrl">
@@ -40,7 +50,9 @@
     </form>
 
     <p class="error">{{error}}</p>
-    <p>{{users}}</p>
-    <gh-visualization val="data" grouped="grouped"></gh-visualization>
+    <!-- <p>{{accounts}}</p> -->
+    <p>{{dataMatching}}</p>
+    <!-- <accountscreation accounts="users"></accountscreation> -->
+    <!-- <gh-visualization val="data" grouped="grouped"></gh-visualization> -->
   </body>
 </html>

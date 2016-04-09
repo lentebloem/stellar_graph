@@ -35963,7 +35963,7 @@
 	
 	
 	/*<replacement>*/
-	var debug = __webpack_require__(230);
+	var debug = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"util\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 	if (debug && debug.debuglog) {
 	  debug = debug.debuglog('stream');
 	} else {
@@ -38774,12 +38774,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(225).Buffer))
 
 /***/ },
-/* 230 */
-/***/ function(module, exports) {
-
-	/* (ignored) */
-
-/***/ },
+/* 230 */,
 /* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -40850,7 +40845,7 @@
 	    function lib$es6$promise$asap$$attemptVertx() {
 	      try {
 	        var r = require;
-	        var vertx = __webpack_require__(257);
+	        var vertx = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"vertx\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 	        lib$es6$promise$asap$$vertxNext = vertx.runOnLoop || vertx.runOnContext;
 	        return lib$es6$promise$asap$$useVertxTimer();
 	      } catch(e) {
@@ -41678,12 +41673,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(4), (function() { return this; }()), __webpack_require__(204)(module)))
 
 /***/ },
-/* 257 */
-/***/ function(module, exports) {
-
-	/* (ignored) */
-
-/***/ },
+/* 257 */,
 /* 258 */
 /***/ function(module, exports) {
 
@@ -93578,7 +93568,7 @@
 	    }
 	  } else if (true) {
 	    // Node.js.
-	    crypto = __webpack_require__(348);
+	    crypto = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"crypto\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 	    if (crypto) {
 	      nacl.setPRNG(function(x, n) {
 	        var i, v = crypto.randomBytes(n);
@@ -93594,12 +93584,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(225).Buffer))
 
 /***/ },
-/* 348 */
-/***/ function(module, exports) {
-
-	/* (ignored) */
-
-/***/ },
+/* 348 */,
 /* 349 */
 /***/ function(module, exports, __webpack_require__) {
 

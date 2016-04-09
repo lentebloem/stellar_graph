@@ -6654,7 +6654,7 @@ webpackJsonp([0],[
 	
 	var _CodeBlock = __webpack_require__(563);
 	
-	var _D3Visual = __webpack_require__(571);
+	var _D3Visual = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./D3Visual\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 	
 	var EndpointResult = (function (_React$Component) {
 	  _inherits(EndpointResult, _React$Component);
@@ -8070,67 +8070,7 @@ webpackJsonp([0],[
 	module.exports = exports['default'];
 
 /***/ },
-/* 571 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, '__esModule', {
-	  value: true
-	});
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-	
-	var _react = __webpack_require__(1);
-	
-	var _react2 = _interopRequireDefault(_react);
-	
-	var _utilitiesPrismJs = __webpack_require__(564);
-	
-	var _utilitiesPrismJs2 = _interopRequireDefault(_utilitiesPrismJs);
-	
-	var _utilitiesPrismJsonLinkHighlighter = __webpack_require__(565);
-	
-	var _utilitiesPrismJsonLinkHighlighter2 = _interopRequireDefault(_utilitiesPrismJsonLinkHighlighter);
-	
-	var _utilitiesScrollOnAnchorOpen = __webpack_require__(570);
-	
-	var _utilitiesScrollOnAnchorOpen2 = _interopRequireDefault(_utilitiesScrollOnAnchorOpen);
-	
-	// @param {string} language - key for the code language. available languages can
-	//   be discovered by doing a console log on `Prism.languages`. More can be added
-	//   in the prism.js
-	
-	var D3Visual = _react2['default'].createClass({
-	  displayName: 'D3Visual',
-	
-	  propTypes: {
-	    code: _react2['default'].PropTypes.string.isRequired,
-	    language: _react2['default'].PropTypes.string
-	  },
-	  shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState) {
-	    return nextProps.code !== this.props.code || nextProps.language !== this.props.language;
-	  },
-	  getHighlightedCode: function getHighlightedCode() {
-	    var highlightedCode = _utilitiesPrismJs2['default'].highlight(this.props.code, _utilitiesPrismJs2['default'].languages[this.props.language]);
-	    if (this.props.language === 'json') {
-	      return (0, _utilitiesPrismJsonLinkHighlighter2['default'])(highlightedCode);
-	    }
-	    return highlightedCode;
-	  },
-	  render: function render() {
-	    var className = 'CodeBlock__code language-' + this.props.language;
-	    var innerHtml = { __html: this.getHighlightedCode() };
-	    return _react2['default'].createElement(
-	      'pre',
-	      { className: 'D3Visual', onClick: _utilitiesScrollOnAnchorOpen2['default'] },
-	      _react2['default'].createElement('code', { className: className, dangerouslySetInnerHTML: innerHtml })
-	    );
-	  }
-	});
-	exports.D3Visual = D3Visual;
-
-/***/ },
+/* 571 */,
 /* 572 */
 /***/ function(module, exports, __webpack_require__) {
 
