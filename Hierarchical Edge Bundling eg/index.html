@@ -66,17 +66,6 @@ var cluster = d3.layout.cluster()
 
 var bundle = d3.layout.bundle();
 
-// var json;
-
-// var oReq = new XMLHttpRequest();
-// oReq.onload = reqListener;
-// oReq.open("get", "readme-flare-imports.json", true);
-// oReq.send();
-
-// function reqListener(e) {
-//     json = JSON.parse(this.responseText);
-// }
-
 var line = d3.svg.line.radial()
     .interpolate("bundle")
     .tension(.85)
