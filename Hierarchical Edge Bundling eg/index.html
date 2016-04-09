@@ -57,7 +57,12 @@ var line = d3.svg.line.radial()
     .tension(.85)
     .radius(function(d) { return d.y; })
     .angle(function(d) { return d.x / 180 * Math.PI; });
+<<<<<<< HEAD
 var svg = d3.select("body").append("svg")
+=======
+
+var svg = d3.select(".relationship").append("svg")
+>>>>>>> eb3b041f6aaefb6b6ac766e74f4391015569e989
     .attr("width", diameter)
     .attr("height", diameter)
   .append("g")
@@ -87,7 +92,7 @@ d3.json("accountcreation.json", function(error, classes) {
       .style("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
       .text(function(d) { return d.key; })
       .on("mouseover", mouseovered)
-      .on("mouseout", mouseouted);    
+      .on("mouseout", mouseouted);
 });
 function mouseovered(d) {
   node
