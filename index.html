@@ -41,7 +41,7 @@
     </style>
   </head>
   <body ng-app="d3DemoApp" ng-controller="AppCtrl">
-    <h1>Github Commit Graph</h1>
+    <h1>Account Creation History Graph</h1>
 
     <form ng-submit="getCommitData()">
       Public Key: <input ng-model="user"></input>
@@ -51,8 +51,9 @@
 
     <p class="error">{{error}}</p>
     <!-- <p>{{accounts}}</p> -->
-    <p>{{dataMatching}}</p>
-    <!-- <accountscreation accounts="users"></accountscreation> -->
+    <!-- <p>{{dataMatching}}</p> -->
+    <!-- <accounts-creation accounts="{{dataMatching}}"></accounts-creation> -->
     <!-- <gh-visualization val="data" grouped="grouped"></gh-visualization> -->
   </body>
+
 </html>

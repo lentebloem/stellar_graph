@@ -28,7 +28,7 @@ var cluster = d3.layout.cluster()
 
 var bundle = d3.layout.bundle();
 
-var json = JSON.parse(readme-flare-imports.json);
+// var json = JSO N.parse("readme-flare-imports.json");
 
 var line = d3.svg.line.radial()
     .interpolate("bundle")
@@ -36,7 +36,7 @@ var line = d3.svg.line.radial()
     .radius(function(d) { return d.y; })
     .angle(function(d) { return d.x / 180 * Math.PI; });
 
-var svg = d3.select("body").append("svg")
+var svg = d3.select(".relationship").append("svg")
     .attr("width", diameter)
     .attr("height", diameter)
   .append("g")
