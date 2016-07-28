@@ -26,7 +26,8 @@ Also, both of the team members were not familiar with D3.js before the hackathon
 ##What we learned
 * Get it done mentality. There is always a way to make novel innovations, it just takes perseverance
 * Some problems stumped us for many hours but in the end we did not need to compromise on functionality
-##What's next for StellarVista
+
+## What's next for StellarVista
 * Implement Stellar Community where users can help each other and get helped.
 * Provide more data visualization and allow users to customize their dashboard.
 * Build smooth entries for microfinancing projects by incorporating other APIs.
