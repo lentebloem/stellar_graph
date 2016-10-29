@@ -1,1 +1,0 @@
-<?php header( 'Location: /mobile-patent-suits/index.html' ) ;  ?>
